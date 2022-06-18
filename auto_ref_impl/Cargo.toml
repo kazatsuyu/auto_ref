@@ -1,0 +1,16 @@
+[package]
+name = "auto_ref_impl"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Shirayama Kazatsuyu <shirayama.kazatsuyu@gmail.com>",
+]
+description = "implementation of auto_ref"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/kazatsuyu/auto_ref"
+
+[dependencies]
+proc-macro2 = "1.0.39"
+syn = { version = "1.0.96", features = ["full"] }
+quote = "1.0.18"

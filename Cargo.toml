@@ -1,0 +1,25 @@
+[package]
+name = "auto_ref"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Shirayama Kazatsuyu <shirayama.kazatsuyu@gmail.com>",
+]
+description = "Replace &T to impl AsRef<T>."
+readme = "README.md"
+keywords = ["macros"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/kazatsuyu/auto_ref"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+
+auto_ref_impl = { path = "./auto_ref_impl" }
+
+[workspace]
+
+members = [
+    "auto_ref_impl",
+]
