@@ -1,17 +1,39 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, collections::HashSet};
 
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::{quote, ToTokens};
-use syn::{Block, FnArg, ItemFn, Pat, PatType, Signature, Type};
+use syn::{parse::Parse, Block, FnArg, ItemFn, Pat, PatType, Signature, Token, Type};
 
-#[allow(clippy::needless_pass_by_value)]
-fn as_ref_impl(_attr: TokenStream, item: TokenStream) -> syn::Result<TokenStream> {
+struct Filters {
+    idents: HashSet<Ident>,
+}
+
+impl Parse for Filters {
+    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
+        let mut idents = HashSet::new();
+        while !input.is_empty() {
+            idents.insert(input.parse()?);
+            let _ = input.parse::<Token![,]>();
+        }
+        Ok(Self { idents })
+    }
+}
+
+fn auto_ref_impl(
+    attr: TokenStream,
+    item: TokenStream,
+    ref_trait: TokenStream,
+    mut_trait: TokenStream,
+    ref_fn: TokenStream,
+    mut_fn: TokenStream,
+) -> syn::Result<TokenStream> {
     let ItemFn {
         attrs,
         vis,
         sig,
         block,
     } = syn::parse2(item)?;
+    let filters: Filters = syn::parse2(attr)?;
     let Signature {
         constness,
         asyncness,
@@ -31,8 +53,13 @@ fn as_ref_impl(_attr: TokenStream, item: TokenStream) -> syn::Result<TokenStream
         .enumerate()
         .map(|(i, input)| match input {
             FnArg::Typed(pat_type) => {
-                if let Type::Reference(ty) = pat_type.ty.as_ref() {
-                    let PatType { attrs, pat, .. } = &pat_type;
+                let PatType { attrs, pat, ty, .. } = &pat_type;
+                if let Pat::Ident(ident) = pat.as_ref() {
+                    if !filters.idents.is_empty() && !filters.idents.contains(&ident.ident) {
+                        return pat_type.to_token_stream();
+                    }
+                }
+                if let Type::Reference(ty) = ty.as_ref() {
                     let lifetime = ty.lifetime.as_ref().map(|l| quote! { #l + });
                     let elem = &ty.elem;
                     let var = if let Pat::Ident(ident) = pat.as_ref() {
@@ -42,17 +69,17 @@ fn as_ref_impl(_attr: TokenStream, item: TokenStream) -> syn::Result<TokenStream
                     };
                     if ty.mutability.is_some() {
                         bindings.push(quote! {
-                            let #pat = #var.as_mut();
+                            let #pat = #var.#mut_fn();
                         });
                         quote! {
-                            #(#attrs)* mut #var: impl #lifetime ::core::convert::AsMut<#elem>
+                            #(#attrs)* mut #var: impl #lifetime #mut_trait<#elem>
                         }
                     } else {
                         bindings.push(quote! {
-                            let #pat = #var.as_ref();
+                            let #pat = #var.#ref_fn();
                         });
                         quote! {
-                            #(#attrs)* #var: impl #lifetime ::core::convert::AsRef<#elem>
+                            #(#attrs)* #var: impl #lifetime #ref_trait<#elem>
                         }
                     }
                 } else {
@@ -80,7 +107,28 @@ fn as_ref_impl(_attr: TokenStream, item: TokenStream) -> syn::Result<TokenStream
 
 #[must_use]
 pub fn auto_ref(attr: TokenStream, item: TokenStream) -> TokenStream {
-    as_ref_impl(attr, item).unwrap_or_else(syn::Error::into_compile_error)
+    auto_ref_impl(
+        attr,
+        item,
+        quote!(::core::convert::AsRef),
+        quote!(::core::convert::AsMut),
+        quote!(as_ref),
+        quote!(as_mut),
+    )
+    .unwrap_or_else(syn::Error::into_compile_error)
+}
+
+#[must_use]
+pub fn auto_borrow(attr: TokenStream, item: TokenStream) -> TokenStream {
+    auto_ref_impl(
+        attr,
+        item,
+        quote!(::core::borrow::Borrow),
+        quote!(::core::borrow::BorrowMut),
+        quote!(borrow),
+        quote!(borrow_mut),
+    )
+    .unwrap_or_else(syn::Error::into_compile_error)
 }
 
 #[cfg(test)]

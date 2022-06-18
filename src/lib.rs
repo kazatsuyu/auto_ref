@@ -28,3 +28,8 @@ use proc_macro::TokenStream;
 pub fn auto_ref(attr: TokenStream, item: TokenStream) -> TokenStream {
     auto_ref_impl::auto_ref(attr.into(), item.into()).into()
 }
+
+#[proc_macro_attribute]
+pub fn auto_borrow(attr: TokenStream, item: TokenStream) -> TokenStream {
+    auto_ref_impl::auto_borrow(attr.into(), item.into()).into()
+}
