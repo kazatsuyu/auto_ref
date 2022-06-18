@@ -16,7 +16,7 @@ proc-macro = true
 
 [dependencies]
 
-auto_ref_impl = { path = "./auto_ref_impl" }
+auto_ref_impl = { version = "0.1.0", path = "./auto_ref_impl" }
 
 [workspace]
 
