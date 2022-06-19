@@ -19,29 +19,29 @@ fn example2(s: &str, t: &mut str) {
 
 #[auto_ref(s)]
 #[auto_borrow(t)]
-fn example3(s: &str, t: &str) {
-    println!("{}, {}", s, t);
+fn example3(s: &str, t: &str, u: &str) {
+    println!("{}, {}, {}", s, t, u);
 }
 ```
 
 The above code is convert to
 
 ```rs
-fn example1(s: impl ::core::convert::AsRef<str>, t: impl ::core::convert::AsMut<str>) {
+fn example1(s: impl ::core::convert::AsRef<str>, mut t: impl ::core::convert::AsMut<str>) {
     let s: &str = s.as_ref();
     let t: &mut str = t.as_mut();
     println!("{}, {}", s, t);
 }
 
-fn example2(s: impl ::core::borrow::Borrow<str>, t: impl ::core::borrow::BorrowMut<str>) {
+fn example2(s: impl ::core::borrow::Borrow<str>, mut t: impl ::core::borrow::BorrowMut<str>) {
     let s: &str = s.borrow();
     let t: &mut str = t.borrow_mut();
     println!("{}, {}", s, t);
 }
 
-fn example3(s: impl ::core::convert::AsRef<str>, t: impl ::core::borrow::Borrow<str>) {
+fn example3(s: impl ::core::convert::AsRef<str>, t: impl ::core::borrow::Borrow<str>, u: &str) {
     let t: &str = t.borrow();
     let s: &str = s.as_ref();
-    println!("{}, {}", s, t);
+    println!("{}, {}, {}", s, t, u);
 }
 ```
