@@ -34,13 +34,13 @@
 //! }
 //!
 //! fn example2(s: impl ::core::borrow::Borrow<str>, t: impl ::core::borrow::BorrowMut<str>) {
-//!     let s: &str = s.as_borrow();
-//!     let t: &mut str = t.as_borrow_mut();
+//!     let s: &str = s.borrow();
+//!     let t: &mut str = t.borrow_mut();
 //!     println!("{}, {}", s, t);
 //! }
 //!
 //! fn example3(s: impl ::core::convert::AsRef<str>, t: impl ::core::borrow::Borrow<str>) {
-//!     let t: &str = t.as_borrow();
+//!     let t: &str = t.borrow();
 //!     let s: &str = s.as_ref();
 //!     println!("{}, {}", s, t);
 //! }
