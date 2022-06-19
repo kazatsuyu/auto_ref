@@ -1,5 +1,9 @@
 # `auto_ref`
 
+[![GitHub Actions](https://github.com/kazatsuyu/auto_ref/actions/workflows/ci.yml/badge.svg)](https://github.com/kazatsuyu/auto_ref)
+[![crates.io](https://img.shields.io/crates/v/auto_ref.svg)](https://crates.io/crates/auto_ref)
+[![docs.rs](https://img.shields.io/docsrs/auto_ref.svg)](https://docs.rs/auto_ref/latest/auto_ref/)
+
 Attributes for replace reference parameter `&T` to `impl AsRef<T>` or `impl Borrow<T>`
 
 ## Usage
