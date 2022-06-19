@@ -1,6 +1,6 @@
 [package]
 name = "auto_ref"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = [
     "Shirayama Kazatsuyu <shirayama.kazatsuyu@gmail.com>",
@@ -16,7 +16,7 @@ proc-macro = true
 
 [dependencies]
 
-auto_ref_impl = { version = "0.1.2", path = "./auto_ref_impl" }
+auto_ref_impl = { version = "0.1.3", path = "./auto_ref_impl" }
 
 [workspace]
 
