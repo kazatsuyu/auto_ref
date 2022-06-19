@@ -1,4 +1,4 @@
-//! # auto_ref
+//! # `auto_ref`
 //!
 //! An attribute for replace reference parameter `&T` to `impl AsRef<T>`
 //!
